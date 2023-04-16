@@ -28,14 +28,6 @@ onMounted(() => {
   chartConfig;
 });
 
-computed({
-  myStyles() {
-    return {
-      height: "50px",
-      position: "relative",
-    };
-  },
-});
 </script>
 
 <template>
@@ -84,7 +76,7 @@ computed({
         <div class="grid grid-cols-3 gap-4 mt-4">
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl h-48">
             <p class="text-sm text-gray-200 font-normal p-2">Wind Status</p>
-            <div>
+            <div class="h-[100px]">
               <Line
                 :style="myStyle"
                 :data="chartConfig.data"

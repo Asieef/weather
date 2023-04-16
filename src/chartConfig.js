@@ -2,9 +2,9 @@ export const data = {
   labels: ["January", "February", "March", "April", "May", "June", "July"],
   datasets: [
     {
-      label: "",
       backgroundColor: "#fff",
-      data: [40, 30, 40, 40, 50, 40, 40],
+      borderColor: 'rgb(75, 192, 192)',
+      data: [40, 38, 40, 37, 42, 43, 40],
     },
   ],
 };
@@ -20,4 +20,12 @@ export const options = {
       display: false,
     },
   },
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      enabled: false,
+    }
+  }
 };
