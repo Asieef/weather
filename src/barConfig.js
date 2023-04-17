@@ -1,10 +1,10 @@
 export const data = {
-  labels: ["January", "February", "March", "April", "May", "June", "July"],
+  labels: ["UV"],
   datasets: [
     {
-      backgroundColor: "#fff",
-      borderColor: "#5F9EA0",
-      data: [40, 38, 40, 37, 42, 43, 40],
+      backgroundColor: "#5F9EA0",
+      borderColor: "#fff",
+      data: [5, 6, 2, 3, 4, 1],
     },
   ],
 };
@@ -15,9 +15,16 @@ export const options = {
   scales: {
     x: {
       display: false,
+      ticks: {
+        color: "#fff",
+      },
+      borderColor: "#fff",
     },
     y: {
-      display: false,
+      ticks: {
+        color: "#fff",
+      },
+      borderColor: "#fff",
     },
   },
   plugins: {
