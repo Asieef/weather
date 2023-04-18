@@ -16,6 +16,7 @@ import { Line } from "vue-chartjs";
 import { Bar } from "vue-chartjs";
 import * as chartConfig from "./chartConfig.js";
 import * as barConfig from "./barConfig.js";
+import * as sunConfig from "./sunConfig.js";
 
 ChartJS.register(
   CategoryScale,
@@ -31,6 +32,7 @@ ChartJS.register(
 onMounted(() => {
   chartConfig;
   barConfig;
+  sunConfig;
 });
 </script>
 
@@ -112,6 +114,19 @@ onMounted(() => {
             <p class="text-sm text-gray-200 font-semibold p-2">
               Sunrise & Sunset
             </p>
+            <div class="h-[80px] px-4 mt-2">
+              <Bar :data="sunConfig.data" :options="sunConfig.options" />
+            </div>
+            <div class="flex justify-between px-4">
+              <div class="px-2">
+                <span class="text-sm font-semibold mb-1 text-white"
+                  >4:30 AM</span
+                >
+              </div>
+              <div class="px-2">
+                <p class="text-sm font-semibold text-white mb-1">6:15 PM</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -165,6 +180,62 @@ onMounted(() => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 mt-10">
+      <div class="col-span-1">
+        <div class="">
+          <div
+            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-cyan-600 to-gray-700 p-4 py-5 px-5 rounded-xl"
+          >
+            <p class="text-sm font-semibold">7 days Forecast</p>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+              <img class="w-10" src="./assets/sun.png" />
+              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            </div>
+          
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl"
+      >
+        <p class="text-sm font-semibold">Weather conditon map</p>
+        <img class="mt-2"  src="./assets/map.jpg" />
       </div>
     </div>
   </div>
