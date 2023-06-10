@@ -1,5 +1,22 @@
 <script setup>
-import { ref, onMounted, reactive, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { Line } from "vue-chartjs";
+import { Bar } from "vue-chartjs";
+import * as chartConfig from "./chartConfig.js";
+import * as barConfig from "./barConfig.js";
+import * as sunConfig from "./sunConfig.js";
+
+let data = ref({});
+let error = ref(null);
+
+fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+  .then((res) => res.json())
+  .then((json) => {
+    data.value = json
+  })
+  .catch((err) => (error.value = err));
+
+
 
 import {
   Chart as ChartJS,
@@ -12,11 +29,7 @@ import {
   BarElement,
   Legend,
 } from "chart.js";
-import { Line } from "vue-chartjs";
-import { Bar } from "vue-chartjs";
-import * as chartConfig from "./chartConfig.js";
-import * as barConfig from "./barConfig.js";
-import * as sunConfig from "./sunConfig.js";
+
 
 ChartJS.register(
   CategoryScale,
@@ -33,7 +46,17 @@ onMounted(() => {
   chartConfig;
   barConfig;
   sunConfig;
+  setIcon();
 });
+
+
+const mainIcon = ref(null);
+
+const setIcon = function () {
+  console.log (weather);
+}
+
+
 </script>
 
 <template>
@@ -46,21 +69,21 @@ onMounted(() => {
           >
             <div class="flex justify-between">
               <div>
-                <img src="./assets/rain_icon.png" />
-                <p class="text-6xl font-bold">28&#8451;</p>
+                <img :src= "mainIcon" />
+                <p class="text-6xl font-bold">{{data.main?.temp}}&#8451;</p>
               </div>
             </div>
             <div class="mt-5 flex gap-2 items-center w-52">
-              <img class="w-6" src="./assets/rain_icon_small.png" />
-              <span class="text-sm text-gray-200 font-semibold">
-                Rainy Storm Clouds
+              <img class="w-6" src="./assets/rain_icon_small.png"/>
+              <span v-if="data.weather" class="text-sm text-gray-200 font-semibold">
+                {{ data.weather[0].main }}
               </span>
             </div>
             <div class="mt-5 border-t border-gray-200">
               <div class="flex gap-2 pt-4">
                 <img class="w-4" src="./assets/location.png" />
                 <span class="text-xs text-gray-200 font-semibold">
-                  Tejaon, Dhaka
+                  Tejaon, Dhaka 
                 </span>
               </div>
               <div class="flex gap-2 mt-2">
@@ -235,8 +258,14 @@ onMounted(() => {
         class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl"
       >
         <p class="text-sm font-semibold">Weather conditon map</p>
-        <img class="mt-2"  src="./assets/map.jpg" />
+        <div class=" mt-2">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14602.908814593184!2d90.4220142102161!3d23.79272668488235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70a7610d4f1%3A0x73d8f4d04735bc67!2sAmari%20Dhaka!5e0!3m2!1sen!2sbd!4v1681803147458!5m2!1sen!2sbd" width="100%" height="270" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
       </div>
     </div>
   </div>
 </template>
+
+
+
+
