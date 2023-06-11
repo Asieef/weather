@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,12 +23,18 @@ const icon = ref('./src/assets/main_clear.png');
 const secondicon = ref('./src/assets/second_clear.png');
 const data = ref(null);
 const error = ref(null);
+const wind = ref(null);
+const humidity = ref(null);
+const visibility = ref(null);
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
   .then((res) => res.json())
   .then((json) => {
     temp.value = Math.round(json.main.temp);
     type.value = json.weather[0].description;
+    wind.value = Math.round(json.wind.speed);
+    humidity.value = json.main.humidity;
+    visibility.value = json.visibility/1000;
 
     if(json.weather[0].icon=='09d' || json.weather[0].icon=='10d'){
       icon.value = './src/assets/main_heavy_rain.png',
@@ -67,8 +73,12 @@ const getCurrent = function () {
 }
 
 const getDate = new Date().toDateString();
-const getTime = new Date().toLocaleTimeString();
 
+const now = ref({});
+function tick() {
+    now.value = new Date().toLocaleTimeString();
+    // console.log(now.value);
+}
 
 ChartJS.register(
   CategoryScale,
@@ -86,6 +96,7 @@ onMounted(() => {
   barConfig;
   sunConfig;
   getCurrent;
+ window.setInterval(tick, 1000);
 });
 
 
@@ -99,15 +110,15 @@ onMounted(() => {
         <div class="">
           
           <div
-            class="text-white max-w-xs my-auto mx-auto  p-4 py-5 px-5 rounded-xl relative"
+            class="text-white max-w-xs my-auto mx-auto  rounded-xl relative"
           >
           <video autoplay loop muted
-            class="-z-20 bg-cover">
+            class="-z-20 h-full w-full absolute object-cover rounded-xl">
             <source src="./assets/haze.mp4"
                 type="video/mp4"/>
         </video>
           
-        <div class="z-30">
+        <div class="z-30 p-4">
             <div class="flex justify-between">
               <div>
                 <img :src="icon" />
@@ -132,7 +143,7 @@ onMounted(() => {
                 <span class="text-xs text-gray-200 font-semibold">
                   {{getDate}}
                 </span>
-                <span class="text-xs font-bold"> {{getTime}}</span>
+                <span class="text-xs font-bold"> {{now}}</span>
               </div>
             </div>
           </div>
@@ -152,13 +163,13 @@ onMounted(() => {
             </div>
             <div class="flex justify-between px-4">
               <div class="flex gap-1 items-end">
-                <p class="text-4xl font-bold">7.80</p>
+                <p class="text-4xl font-bold"> {{wind}} </p>
                 <span class="text-xs text-gray-400 font-semibold mb-1"
                   >km/h</span
                 >
               </div>
               <div class="flex items-end">
-                <p class="text-xs font-semibold text-gray-400 mb-1">11:55 AM</p>
+                <p class="text-xs font-semibold text-gray-400 mb-1">{{now}}</p>
               </div>
             </div>
           </div>
@@ -201,7 +212,7 @@ onMounted(() => {
               <div>
                 <p class="text-xs text-gray-300 font-semibold">Humidity</p>
                 <p class="text-2xl font-bold mt-2">
-                  75<span class="text-xs text-gray-300 font-semibold">%</span>
+                  {{humidity}}<span class="text-xs text-gray-300 font-semibold">%</span>
                 </p>
               </div>
               <div class="mt-4">
@@ -217,7 +228,7 @@ onMounted(() => {
               <div>
                 <p class="text-xs text-gray-300 font-semibold">Visibility</p>
                 <p class="text-2xl font-bold mt-2">
-                  05<span class="text-xs text-gray-300 font-semibold"> km</span>
+                  {{visibility}}<span class="text-xs text-gray-300 font-semibold"> km</span>
                 </p>
               </div>
               <div class="mt-4">
