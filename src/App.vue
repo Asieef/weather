@@ -1,23 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { Line } from "vue-chartjs";
-import { Bar } from "vue-chartjs";
-import * as chartConfig from "./chartConfig.js";
-import * as barConfig from "./barConfig.js";
-import * as sunConfig from "./sunConfig.js";
-
-let data = ref({});
-let error = ref(null);
-
-fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
-  .then((res) => res.json())
-  .then((json) => {
-    data.value = json
-  })
-  .catch((err) => (error.value = err));
-
-
-
+import { ref, onMounted } from "vue";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,6 +11,63 @@ import {
   BarElement,
   Legend,
 } from "chart.js";
+import { Line } from "vue-chartjs";
+import { Bar } from "vue-chartjs";
+import * as chartConfig from "./chartConfig.js";
+import * as barConfig from "./barConfig.js";
+import * as sunConfig from "./sunConfig.js";
+
+const temp = ref(0);
+const type = ref(null);
+const icon = ref('./src/assets/main_clear.png');
+const secondicon = ref('./src/assets/second_clear.png');
+const data = ref(null);
+const error = ref(null);
+
+fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+  .then((res) => res.json())
+  .then((json) => {
+    temp.value = Math.round(json.main.temp);
+    type.value = json.weather[0].description;
+
+    if(json.weather[0].icon=='09d' || json.weather[0].icon=='10d'){
+      icon.value = './src/assets/main_heavy_rain.png',
+      secondicon.value = './src/assets/second_rain.png'
+    }
+    else if(json.weather[0].icon=='01d'){
+      icon.value = './src/assets/main_clear.png',
+      secondicon.value = './src/assets/second_clear.png'
+    }
+    else if(json.weather[0].icon=='02d' || json.weather[0].icon=='03d' || json.weather[0].icon=='04d'){
+      icon.value = './src/assets/main_few_cloud.png',
+      secondicon.value = './src/assets/second_cloud.png'
+    }
+
+    else if(json.weather[0].icon=='11d'){
+      icon.value = './src/assets/rain_icon.png',
+      secondicon.value = './src/assets/second_thunder.png'
+    }
+
+    else if(json.weather[0].icon=='50d'){
+      icon.value = './src/assets/main_haze.png',
+      secondicon.value = './src/assets/second_haze.png'
+    }
+
+    else if(json.weather[0].icon=='13d'){
+      icon.value = './src/assets/main_mist.png',
+      secondicon.value = './src/assets/second_mist.png'
+    }
+    
+  })
+  .catch((err) => (error.value = err));
+
+
+const getCurrent = function () {
+  return data.weather[0].icon;
+}
+
+const getDate = new Date().toDateString();
+const getTime = new Date().toLocaleTimeString();
 
 
 ChartJS.register(
@@ -46,15 +85,9 @@ onMounted(() => {
   chartConfig;
   barConfig;
   sunConfig;
-  setIcon();
+  getCurrent;
 });
 
-
-const mainIcon = ref(null);
-
-const setIcon = function () {
-  console.log (weather);
-}
 
 
 </script>
@@ -64,36 +97,45 @@ const setIcon = function () {
     <div class="grid grid-cols-4">
       <div class="col-span-1">
         <div class="">
+          
           <div
-            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-cyan-900 to-cyan-500 p-4 py-5 px-5 rounded-xl"
+            class="text-white max-w-xs my-auto mx-auto  p-4 py-5 px-5 rounded-xl relative"
           >
+          <video autoplay loop muted
+            class="-z-20 bg-cover">
+            <source src="./assets/haze.mp4"
+                type="video/mp4"/>
+        </video>
+          
+        <div class="z-30">
             <div class="flex justify-between">
               <div>
-                <img :src= "mainIcon" />
-                <p class="text-6xl font-bold">{{data.main?.temp}}&#8451;</p>
+                <img :src="icon" />
+                <p class="text-6xl font-bold">{{temp}}&#8451;</p>
               </div>
             </div>
             <div class="mt-5 flex gap-2 items-center w-52">
-              <img class="w-6" src="./assets/rain_icon_small.png"/>
-              <span v-if="data.weather" class="text-sm text-gray-200 font-semibold">
-                {{ data.weather[0].main }}
+              <img class="w-6" :src="secondicon" />
+              <span class="text-sm text-gray-200 font-semibold">
+                {{ type }}
               </span>
             </div>
             <div class="mt-5 border-t border-gray-200">
               <div class="flex gap-2 pt-4">
                 <img class="w-4" src="./assets/location.png" />
                 <span class="text-xs text-gray-200 font-semibold">
-                  Tejaon, Dhaka 
+                  Dhaka
                 </span>
               </div>
               <div class="flex gap-2 mt-2">
                 <img class="w-4" src="./assets/calendar.png" />
                 <span class="text-xs text-gray-200 font-semibold">
-                  12 April, 2023
+                  {{getDate}}
                 </span>
-                <span class="text-xs font-bold"> 11:55 AM</span>
+                <span class="text-xs font-bold"> {{getTime}}</span>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
