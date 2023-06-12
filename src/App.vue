@@ -26,15 +26,31 @@ const error = ref(null);
 const wind = ref(null);
 const humidity = ref(null);
 const visibility = ref(null);
+const feels = ref(null);
+const uv = ref(null);
+const condition_text = ref(null);
+const pressure = ref(null);
+const wind_dir = ref(null);
+
+fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
+  .then((res) => res.json())
+  .then((json) => {
+    uv.value = json.current.uv;
+    condition_text.value = json.current.condition.text;
+    wind_dir.value = json.current.wind_dir;
+  });
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
   .then((res) => res.json())
   .then((json) => {
     temp.value = Math.round(json.main.temp);
+    feels.value = Math.round(json.main.feels_like);
     type.value = json.weather[0].description;
     wind.value = Math.round(json.wind.speed);
     humidity.value = json.main.humidity;
     visibility.value = json.visibility/1000;
+    pressure.value = json.main.pressure;
+    
 
     if(json.weather[0].icon=='09d' || json.weather[0].icon=='10d'){
       icon.value = './src/assets/main_heavy_rain.png',
@@ -114,7 +130,7 @@ onMounted(() => {
           >
           <video autoplay loop muted
             class="-z-20 h-full w-full absolute object-cover rounded-xl">
-            <source src="./assets/haze.mp4"
+            <source src="./assets/thunder.mp4"
                 type="video/mp4"/>
         </video>
           
@@ -181,8 +197,8 @@ onMounted(() => {
             </div>
             <div class="flex justify-center items-center px-4">
               <div class="flex gap-1 items-end">
-                <p class="text-4xl font-bold">5.0</p>
-                <span class="text-xs text-gray-400 font-semibold mb-1">uv</span>
+                <p class="text-4xl font-bold">{{uv}}.0</p>
+                <span class="text-xs text-gray-400 font-semibold mb-1">uv </span>
               </div>
             </div>
           </div>
@@ -216,9 +232,9 @@ onMounted(() => {
                 </p>
               </div>
               <div class="mt-4">
-                <img class="w-4" src="./assets/dew.png" />
+                <img class="w-4" src="./assets/wind_dir.png" />
                 <p class="text-xs text-gray-300 font-semibold">
-                  The dew point is 27% right now
+                  Wind direction is {{wind_dir}} 
                 </p>
               </div>
             </div>
@@ -232,9 +248,9 @@ onMounted(() => {
                 </p>
               </div>
               <div class="mt-4">
-                <img class="w-4" src="./assets/eye.png" />
+                <img class="w-4" src="./assets/pressure.png" />
                 <p class="text-xs text-gray-300 font-semibold">
-                  Haze is affecting Visibility
+                  Pressure is {{pressure}}hPa 
                 </p>
               </div>
             </div>
@@ -245,12 +261,13 @@ onMounted(() => {
                 <p class="text-xs text-gray-300 font-semibold">Feels Like</p>
                 <div class="flex items-center">
                   <img class="h-6" src="./assets/thermo.png" />
-                  <p class="text-2xl font-bold mt-2 mb-2">38&deg</p>
+                  <p class="text-2xl font-bold mt-2 mb-2">{{feels}}&deg</p>
                 </div>
               </div>
               <div class="mt-4">
+                <img class="w-4" src="./assets/condition.png" />
                 <p class="text-xs text-gray-300 font-semibold">
-                  Humidity is making it feel hotter
+                  {{condition_text}}
                 </p>
               </div>
             </div>
