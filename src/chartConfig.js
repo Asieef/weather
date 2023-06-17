@@ -3,7 +3,7 @@ export const data = {
   datasets: [
     {
       backgroundColor: "#fff",
-      borderColor: 'rgb(75, 192, 192)',
+      borderColor: "#5F9EA0",
       data: [40, 38, 40, 37, 42, 43, 40],
     },
   ],
@@ -26,6 +26,6 @@ export const options = {
     },
     tooltip: {
       enabled: false,
-    }
-  }
+    },
+  },
 };
