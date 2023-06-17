@@ -62,10 +62,11 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     sunset.value =  new Date(json.sys.sunset*1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
     // const diff = (json.sys.sunset.getTime() - json.sys.sunrise.getTime()) / 1000;
-    sundiff.value =  Math.round(((new Date(json.sys.sunset*1000).getTime() - new Date(json.sys.sunrise*1000).getTime()) / 1000) /3600);
-    currDiffValue.value = Math.round(100/sundiff.value);
-    currSunPos.value = 100/(sundiff.value / currDiffValue.value);
-    console.log(currSunPos.value);
+    sundiff.value =  Math.ceil(((new Date(json.sys.sunset*1000).getTime() - new Date(json.sys.sunrise*1000).getTime()) / 1000) /3600);
+    // currDiffValue.value = 100/sundiff.value;
+    currDiffValue.value = Math.ceil(100/sundiff.value);
+    currSunPos.value = Math.ceil(100/(sundiff.value / currDiffValue.value));
+    console.log(sundiff.value, currDiffValue.value, currSunPos.value);
 
 
     if(json.weather[0].icon=='09d' || json.weather[0].icon=='10d'){
@@ -233,9 +234,14 @@ theme: {
           startAngle: -90,
           background: '#bbb',
           endAngle: 90,
+
+          hollow: {
+        margin: 85,
+        size: "50%"
+      },
        
           track: {
-            strokeWidth: '10%',
+            strokeWidth: '5%',
             margin: 5, // margin is in pixels
             dropShadow: {
               enabled: true,
@@ -276,6 +282,11 @@ theme: {
           stops: [0, 5, 7, 9]
         },
       },
+      stroke: {
+        curve: 'straight',
+        width: 2,
+        show:false
+  },
       labels: [''],
     }
 
@@ -374,11 +385,11 @@ theme: {
             </div>
             <div class="flex justify-between px-4">
               <div class="px-2">
-                <p class=" text-[#fcc42c] text-sm font-semibold mb-1">Sunrise</p>
+                <img class="w-4" src="./assets/sunrise_y.png" />
                 <p class="text-xs font-semibold text-white mb-1">{{sunrise}}</p>
               </div>
               <div class="px-2">
-                <p class="text-sm font-semibold text-[#fcc42c]  mb-1">Sunset</p>
+                <img class="w-4" src="./assets/sunset_y.png" />
                 <p class="text-xs font-semibold text-white mb-1">{{sunset}}</p>
               </div>
             </div>
