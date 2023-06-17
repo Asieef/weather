@@ -63,8 +63,7 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
 
     // const diff = (json.sys.sunset.getTime() - json.sys.sunrise.getTime()) / 1000;
     sundiff.value =  Math.ceil(((new Date(json.sys.sunset*1000).getTime() - new Date(json.sys.sunrise*1000).getTime()) / 1000) /3600);
-    // currDiffValue.value = 100/sundiff.value;
-    currDiffValue.value = Math.ceil(100/sundiff.value);
+    currDiffValue.value = Math.ceil(new Date().getHours() -((new Date(json.sys.sunrise*1000).getTime()/1000)/3600)/86400);
     currSunPos.value = Math.ceil(100/(sundiff.value / currDiffValue.value));
     console.log(sundiff.value, currDiffValue.value, currSunPos.value);
 
@@ -509,7 +508,6 @@ theme: {
     </div>
   </div>
 </template>
-
 
 
 
