@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, toRaw  } from "vue";
+import ApexCharts from 'apexcharts';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,10 +17,13 @@ import { Bar } from "vue-chartjs";
 import * as chartConfig from "./chartConfig.js";
 import * as barConfig from "./barConfig.js";
 import * as sunConfig from "./sunConfig.js";
+import * as donutConfig from "./donutConfig.js";
+
 
 const temp = ref(0);
 const type = ref(null);
 const icon = ref('./src/assets/main_clear.png');
+const bgvideo = ref('./src/assets/clear.mp4');
 const secondicon = ref('./src/assets/second_clear.png');
 const data = ref(null);
 const error = ref(null);
@@ -27,11 +31,15 @@ const wind = ref(null);
 const humidity = ref(null);
 const visibility = ref(null);
 const feels = ref(null);
-const uv = ref(null);
+const uv = ref([]);
 const condition_text = ref(null);
 const pressure = ref(null);
 const wind_dir = ref(null);
-
+const sunrise = ref(null);
+const sunset = ref(null);
+const currDiffValue = ref(null);
+const sundiff = ref(null);
+const currSunPos = ref([]);
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
   .then((res) => res.json())
   .then((json) => {
@@ -50,34 +58,48 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     humidity.value = json.main.humidity;
     visibility.value = json.visibility/1000;
     pressure.value = json.main.pressure;
-    
+    sunrise.value = new Date(json.sys.sunrise*1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    sunset.value =  new Date(json.sys.sunset*1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    // const diff = (json.sys.sunset.getTime() - json.sys.sunrise.getTime()) / 1000;
+    sundiff.value =  Math.round(((new Date(json.sys.sunset*1000).getTime() - new Date(json.sys.sunrise*1000).getTime()) / 1000) /3600);
+    currDiffValue.value = Math.round(100/sundiff.value);
+    currSunPos.value = 100/(sundiff.value / currDiffValue.value);
+    console.log(currSunPos.value);
+
 
     if(json.weather[0].icon=='09d' || json.weather[0].icon=='10d'){
       icon.value = './src/assets/main_heavy_rain.png',
-      secondicon.value = './src/assets/second_rain.png'
+      secondicon.value = './src/assets/second_rain.png',
+      bgvideo.value = './src/assets/rain.mp4'
     }
     else if(json.weather[0].icon=='01d'){
       icon.value = './src/assets/main_clear.png',
-      secondicon.value = './src/assets/second_clear.png'
+      secondicon.value = './src/assets/second_clear.png',
+      bgvideo.value = './src/assets/clear.mp4'
     }
     else if(json.weather[0].icon=='02d' || json.weather[0].icon=='03d' || json.weather[0].icon=='04d'){
       icon.value = './src/assets/main_few_cloud.png',
-      secondicon.value = './src/assets/second_cloud.png'
+      secondicon.value = './src/assets/second_cloud.png',
+      bgvideo.value = './src/assets/cloud.mp4'
     }
 
     else if(json.weather[0].icon=='11d'){
       icon.value = './src/assets/rain_icon.png',
-      secondicon.value = './src/assets/second_thunder.png'
+      secondicon.value = './src/assets/second_thunder.png',
+      bgvideo.value = './src/assets/thunder.mp4'
     }
 
     else if(json.weather[0].icon=='50d'){
       icon.value = './src/assets/main_haze.png',
-      secondicon.value = './src/assets/second_haze.png'
+      secondicon.value = './src/assets/second_haze.png',
+      bgvideo.value = './src/assets/haze.mp4'
     }
 
     else if(json.weather[0].icon=='13d'){
       icon.value = './src/assets/main_mist.png',
-      secondicon.value = './src/assets/second_mist.png'
+      secondicon.value = './src/assets/second_mist.png',
+      bgvideo.value = './src/assets/mist.mp4'
     }
     
   })
@@ -115,7 +137,147 @@ onMounted(() => {
  window.setInterval(tick, 1000);
 });
 
+const chartOptions= {
 
+
+theme: {
+  monochrome: {
+    enabled: true,
+    color: '#5F9EA0',
+    shadeTo: 'light',
+    shadeIntensity: 0.65
+  }
+},
+
+      chart: {
+        type: 'radialBar',
+        colors: ['#fff'],
+        offsetY: -20,
+        sparkline: {
+          enabled: true
+        }
+      },
+      plotOptions: {
+        radialBar: {
+          startAngle: -90,
+          background: '#bbb',
+          endAngle: 90,
+       
+          track: {
+            strokeWidth: '10%',
+            margin: 5, // margin is in pixels
+            dropShadow: {
+              enabled: true,
+              top: 2,
+              left: 0,
+              color: '#999',
+              opacity: 1,
+              blur: 4
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            name: {
+              show: true
+            },
+            value: {
+              offsetY: -2,
+              fontSize: '22px',
+              show: false
+            }
+          }
+        }
+      },
+      grid: {
+        padding: {
+          top: -10
+        }
+      },
+      fill: {
+        type: 'gradient',
+        
+        gradient: {
+          shade: 'light',
+          shadeIntensity: 0.4,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 5, 7, 9]
+        },
+      },
+      labels: [''],
+    }
+
+    const sunChartOptions= {
+
+
+theme: {
+  monochrome: {
+    enabled: true,
+    color: '#fcc42c',
+    shadeTo: 'light',
+    shadeIntensity: 0.65
+  }
+},
+
+      chart: {
+        type: 'radialBar',
+        colors: ['#fff'],
+        offsetY: -20,
+        sparkline: {
+          enabled: true
+        }
+      },
+      plotOptions: {
+        radialBar: {
+          startAngle: -90,
+          background: '#bbb',
+          endAngle: 90,
+       
+          track: {
+            strokeWidth: '10%',
+            margin: 5, // margin is in pixels
+            dropShadow: {
+              enabled: true,
+              top: 2,
+              left: 0,
+              color: '#999',
+              opacity: 1,
+              blur: 4
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            name: {
+              show: true
+            },
+            value: {
+              offsetY: -2,
+              fontSize: '22px',
+              show: false
+            }
+          }
+        }
+      },
+      grid: {
+        padding: {
+          top: -10
+        }
+      },
+      fill: {
+        type: 'gradient',
+        
+        gradient: {
+          shade: 'light',
+          shadeIntensity: 0.4,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 5, 7, 9]
+        },
+      },
+      labels: [''],
+    }
 
 </script>
 
@@ -128,9 +290,9 @@ onMounted(() => {
           <div
             class="text-white max-w-xs my-auto mx-auto  rounded-xl relative"
           >
-          <video autoplay loop muted
+          <video :key="bgvideo" autoplay loop muted
             class="-z-20 h-full w-full absolute object-cover rounded-xl">
-            <source src="./assets/thunder.mp4"
+            <source :src= "bgvideo"
                 type="video/mp4"/>
         </video>
           
@@ -193,7 +355,9 @@ onMounted(() => {
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">UV Index</p>
             <div class="h-[80px] px-4">
-              <Bar :data="barConfig.data" :options="barConfig.options" />
+              <!-- <Bar :data="barConfig.data" :options="barConfig.options" /> -->
+
+              <apexchart type="radialBar" :options="chartOptions" :series="[uv*10]"></apexchart>
             </div>
             <div class="flex justify-center items-center px-4">
               <div class="flex gap-1 items-end">
@@ -202,21 +366,20 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          <div class="col-span-1 bg-black bg-opacity-10 rounded-xl">
-            <p class="text-sm text-gray-200 font-semibold p-2">
-              Sunrise & Sunset
-            </p>
-            <div class="h-[80px] px-4 mt-2">
-              <Bar :data="sunConfig.data" :options="sunConfig.options" />
+          <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
+            <p class="text-sm text-gray-200 font-semibold px-4"> Sunrise & Sunset</p>
+             
+            <div class="h-[80px] px-4">
+              <apexchart type="radialBar" :options="sunChartOptions" :series="[currSunPos]"></apexchart>
             </div>
             <div class="flex justify-between px-4">
               <div class="px-2">
-                <span class="text-sm font-semibold mb-1 text-white"
-                  >4:30 AM</span
-                >
+                <p class=" text-[#fcc42c] text-sm font-semibold mb-1">Sunrise</p>
+                <p class="text-xs font-semibold text-white mb-1">{{sunrise}}</p>
               </div>
               <div class="px-2">
-                <p class="text-sm font-semibold text-white mb-1">6:15 PM</p>
+                <p class="text-sm font-semibold text-[#fcc42c]  mb-1">Sunset</p>
+                <p class="text-xs font-semibold text-white mb-1">{{sunset}}</p>
               </div>
             </div>
           </div>
