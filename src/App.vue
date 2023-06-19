@@ -40,6 +40,18 @@ const sunset = ref(null);
 const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
+const foreCast = ref(null);
+
+
+fetch('http://api.openweathermap.org/data/2.5/forecast?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+  .then((res) => res.json())
+  .then((json) => {
+    foreCast.value = json.list;
+    console.log(foreCast.value)
+  });
+
+
+
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
   .then((res) => res.json())
   .then((json) => {
@@ -208,7 +220,7 @@ theme: {
       labels: [''],
     }
 
-    const sunChartOptions= {
+const sunChartOptions= {
 
 
 theme: {
@@ -222,22 +234,36 @@ theme: {
 
       chart: {
         type: 'radialBar',
-        colors: ['#fff'],
         offsetY: -20,
-        sparkline: {
-          enabled: true
-        }
       },
       plotOptions: {
         radialBar: {
           startAngle: -90,
           background: '#bbb',
           endAngle: 90,
+          inverseOrder: true,
+          offsetX: 0,
+          offsetY: 0,
 
           hollow: {
-        margin: 85,
-        size: "50%"
+            margin: 5,
+              size: '65%',
+              background: 'transparent',
+              image: undefined,
+              imageWidth: 150,
+              imageHeight: 150,
+              imageOffsetX: 0,
+              imageOffsetY: 0,
+              imageClipped: true,
+              position: 'front',
+              dropShadow: {
+                enabled: true,
+                top: 0,
+                left: 0,
+                blur: 3,
+                opacity: 0.5
       },
+    },
        
           track: {
             strokeWidth: '5%',
@@ -270,21 +296,34 @@ theme: {
         }
       },
       fill: {
-        type: 'gradient',
-        
-        gradient: {
-          shade: 'light',
-          shadeIntensity: 0.4,
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [0, 5, 7, 9]
+        colors: undefined,
+  opacity: 0.9,
+  type: 'gradient',
+  gradient: {
+      shade: 'light',
+      type: "horizontal",
+      shadeIntensity: 0.5,
+      gradientToColors: undefined,
+      inverseColors: true,
+      opacityFrom: 1,
+      opacityTo: 1,
+      stops: [0, 0, 0],
+      colorStops: []
         },
+      
+      image: {
+      src: ['./assets/senset.png'],
+      width:10,
+      height:10
+  },
       },
       stroke: {
-        curve: 'straight',
-        width: 2,
-        show:false
+        show: true,
+    curve: 'smooth',
+    lineCap: 'round',
+    colors: undefined,
+    width: 2,
+    dashArray: 0, 
   },
       labels: [''],
     }
@@ -455,43 +494,14 @@ theme: {
           <div
             class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-cyan-600 to-gray-700 p-4 py-5 px-5 rounded-xl"
           >
-            <p class="text-sm font-semibold">7 days Forecast</p>
-            <div class="flex justify-between items-center mt-2">
+            <p class="text-sm font-semibold">5 days Forecast</p>
+            <div v-for="(day, index) in foreCast" :key="index" class="flex justify-between items-center mt-2">
               <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
+              <p class=" text-white font-semibold text-lg">{{day.main.temp_max}}&#8451/ <span class=" text-gray-300 font-semibold text-sm">{{day.main.temp_min}}</span></p>
+              <p class=" text-gray-300 font-semibold text-xs">{{day.dt_txt}}</p>
               <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
             </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
+           
           
           </div>
         </div>
