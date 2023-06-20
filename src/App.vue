@@ -40,24 +40,21 @@ const sunset = ref(null);
 const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
-const foreCast = ref(null);
+const foreCastIcon = ref(null);
 const filterForcast = ref([]);
 
-fetch('http://api.openweathermap.org/data/2.5/forecast?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=6')
   .then((res) => res.json())
   .then((json) => {
-    foreCast.value = json.list;
-    const latestDateTimesByDate = {};
-
-    json.list.forEach(di => {
-      let dateKey = di.dt_txt.substring(0, 10);
-      //console.log(dateKey);
-      if (!latestDateTimesByDate[dateKey] || di.dt_txt > latestDateTimesByDate[dateKey].dt_txt) {
-        latestDateTimesByDate[dateKey] = di;
-      }
-    });
-    Object.keys(latestDateTimesByDate).forEach(key => filterForcast.value.push(latestDateTimesByDate[key]));
+    filterForcast.value = json.forecast.forecastday;
   });
+
+
+  function getDayName(dateStr, locale)
+{
+    var date = new Date(dateStr);
+    return date.toLocaleDateString(locale, { weekday: 'long' });        
+}
 
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
   .then((res) => res.json())
@@ -487,16 +484,16 @@ const sunChartOptions = {
       <div class="col-span-1">
         <div class="">
           <div
-            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-cyan-600 to-gray-700 p-4 py-5 px-5 rounded-xl">
-            <p class="text-sm font-semibold">5 days Forecast</p>
+            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 rounded-xl">
+            <p class="text-sm font-semibold">Weather Forecast</p>
             <div v-for="(day, index) in filterForcast" :key="index">
               <div class="flex justify-between items-center mt-2">
-                <img class="w-10" src="./assets/sun.png" />
-                <p class=" text-white font-semibold text-lg">{{ day.main.temp_max }}&#8451/
-                  <span class=" text-gray-300 font-semibold text-sm">{{ day.main.temp_min }}</span>
+                <img class="w-10" :src="day.day.condition.icon" />
+                <p class=" text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
+                  <span class=" text-gray-300 font-semibold text-sm">{{ Math.round(day.day.mintemp_c) }}</span>
                 </p>
-                <p class=" text-gray-300 font-semibold text-xs">{{ day.dt_txt }}</p>
-                <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+                <p class=" text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
+                <p class=" text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
               </div>
             </div>
           </div>
