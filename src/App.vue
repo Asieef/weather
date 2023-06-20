@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, toRaw } from "vue";
+import { ref, onMounted, computed, reactive } from "vue";
 import ApexCharts from 'apexcharts';
 import {
   Chart as ChartJS,
@@ -40,6 +40,25 @@ const sunset = ref(null);
 const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
+const foreCast = ref(null);
+const filterForcast = ref([]);
+
+fetch('http://api.openweathermap.org/data/2.5/forecast?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+  .then((res) => res.json())
+  .then((json) => {
+    foreCast.value = json.list;
+    const latestDateTimesByDate = {};
+
+    json.list.forEach(di => {
+      let dateKey = di.dt_txt.substring(0, 10);
+      //console.log(dateKey);
+      if (!latestDateTimesByDate[dateKey] || di.dt_txt > latestDateTimesByDate[dateKey].dt_txt) {
+        latestDateTimesByDate[dateKey] = di;
+      }
+    });
+    Object.keys(latestDateTimesByDate).forEach(key => filterForcast.value.push(latestDateTimesByDate[key]));
+  });
+
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
   .then((res) => res.json())
   .then((json) => {
@@ -65,8 +84,6 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     sundiff.value = Math.ceil(((new Date(json.sys.sunset * 1000).getTime() - new Date(json.sys.sunrise * 1000).getTime()) / 1000) / 3600);
     currDiffValue.value = Math.ceil(new Date().getHours() - ((new Date(json.sys.sunrise * 1000).getTime() / 1000) / 3600) / 86400);
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
-    console.log(sundiff.value, currDiffValue.value, currSunPos.value);
-
 
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
       icon.value = './src/assets/main_heavy_rain.png',
@@ -138,8 +155,6 @@ onMounted(() => {
 });
 
 const chartOptions = {
-
-
   theme: {
     monochrome: {
       enabled: true,
@@ -222,21 +237,35 @@ const sunChartOptions = {
 
   chart: {
     type: 'radialBar',
-    colors: ['#fff'],
     offsetY: -20,
-    sparkline: {
-      enabled: true
-    }
   },
   plotOptions: {
     radialBar: {
       startAngle: -90,
       background: '#bbb',
       endAngle: 90,
+      inverseOrder: true,
+      offsetX: 0,
+      offsetY: 0,
 
       hollow: {
-        margin: 85,
-        size: "50%"
+        margin: 5,
+        size: '65%',
+        background: 'transparent',
+        image: undefined,
+        imageWidth: 150,
+        imageHeight: 150,
+        imageOffsetX: 0,
+        imageOffsetY: 0,
+        imageClipped: true,
+        position: 'front',
+        dropShadow: {
+          enabled: true,
+          top: 0,
+          left: 0,
+          blur: 3,
+          opacity: 0.5
+        },
       },
 
       track: {
@@ -270,21 +299,34 @@ const sunChartOptions = {
     }
   },
   fill: {
+    colors: undefined,
+    opacity: 0.9,
     type: 'gradient',
-
     gradient: {
       shade: 'light',
-      shadeIntensity: 0.4,
-      inverseColors: false,
+      type: "horizontal",
+      shadeIntensity: 0.5,
+      gradientToColors: undefined,
+      inverseColors: true,
       opacityFrom: 1,
       opacityTo: 1,
-      stops: [0, 5, 7, 9]
+      stops: [0, 0, 0],
+      colorStops: []
+    },
+
+    image: {
+      src: ['./assets/senset.png'],
+      width: 10,
+      height: 10
     },
   },
   stroke: {
-    curve: 'straight',
+    show: true,
+    curve: 'smooth',
+    lineCap: 'round',
+    colors: undefined,
     width: 2,
-    show: false
+    dashArray: 0,
   },
   labels: [''],
 }
@@ -446,50 +488,17 @@ const sunChartOptions = {
         <div class="">
           <div
             class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-cyan-600 to-gray-700 p-4 py-5 px-5 rounded-xl">
-            <p class="text-sm font-semibold">7 days Forecast</p>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+            <p class="text-sm font-semibold">5 days Forecast</p>
+            <div v-for="(day, index) in filterForcast" :key="index">
+              <div class="flex justify-between items-center mt-2">
+                <img class="w-10" src="./assets/sun.png" />
+                <p class=" text-white font-semibold text-lg">{{ day.main.temp_max }}&#8451/
+                  <span class=" text-gray-300 font-semibold text-sm">{{ day.main.temp_min }}</span>
+                </p>
+                <p class=" text-gray-300 font-semibold text-xs">{{ day.dt_txt }}</p>
+                <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
+              </div>
             </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-            <div class="flex justify-between items-center mt-2">
-              <img class="w-10" src="./assets/sun.png" />
-              <p class=" text-white font-semibold text-lg">+29&#8451/ <span
-                  class=" text-gray-300 font-semibold text-sm">+18</span></p>
-              <p class=" text-gray-300 font-semibold text-xs">25 July</p>
-              <p class=" text-gray-300 font-semibold text-xs">Tuesday</p>
-            </div>
-
           </div>
         </div>
       </div>
@@ -506,6 +515,5 @@ const sunChartOptions = {
     </div>
   </div>
 </template>
-
 
 
