@@ -82,6 +82,8 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     currDiffValue.value = Math.ceil(new Date().getHours() - ((new Date(json.sys.sunrise * 1000).getTime() / 1000) / 3600) / 86400);
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
 
+
+
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
       icon.value = './src/assets/main_heavy_rain.png',
         secondicon.value = './src/assets/second_rain.png',
@@ -118,6 +120,13 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
 
   })
   .catch((err) => (error.value = err));
+
+  fetch('https://tile.openweathermap.org/map/temp_new/3/{x}/{y}.png?appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
+  .then((res) => res.json())
+  .then((json) => {
+    uv.value = json.current.uv;
+
+  });
 
 
 const getCurrent = function () {
@@ -487,13 +496,13 @@ const sunChartOptions = {
             class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 rounded-xl">
             <p class="text-sm font-semibold">Weather Forecast</p>
             <div v-for="(day, index) in filterForcast" :key="index">
-              <div class="flex justify-between items-center mt-2">
-                <img class="w-10" :src="day.day.condition.icon" />
-                <p class=" text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
+              <div class="grid grid-cols-4 mt-2 items-center justify-items-center">
+                <img class="w-10 col-span-1" :src="day.day.condition.icon" />
+                <p class=" col-span-1 text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
                   <span class=" text-gray-300 font-semibold text-sm">{{ Math.round(day.day.mintemp_c) }}</span>
                 </p>
-                <p class=" text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
-                <p class=" text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
               </div>
             </div>
           </div>
@@ -503,10 +512,9 @@ const sunChartOptions = {
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Weather conditon map</p>
         <div class=" mt-2">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14602.908814593184!2d90.4220142102161!3d23.79272668488235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70a7610d4f1%3A0x73d8f4d04735bc67!2sAmari%20Dhaka!5e0!3m2!1sen!2sbd!4v1681803147458!5m2!1sen!2sbd"
-            width="100%" height="270" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe width="100%" height="270"
+        src="https://embed.windy.com/embed2.html?lat=22.726&lon=90.560&detailLat=23.639&detailLon=90.560&width=800&height=270&zoom=10&level=surface&overlay=rainAccu&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+        frameborder="0"></iframe>
         </div>
       </div>
     </div>
