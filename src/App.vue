@@ -40,10 +40,9 @@ const sunset = ref(null);
 const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
-const foreCastIcon = ref(null);
 const filterForcast = ref([]);
 
-fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=6')
+fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
   .then((json) => {
     filterForcast.value = json.forecast.forecastday;
@@ -56,12 +55,25 @@ fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc4573023
     return date.toLocaleDateString(locale, { weekday: 'long' });        
 }
 
-fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
+fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
   .then((res) => res.json())
   .then((json) => {
     uv.value = json.current.uv;
     condition_text.value = json.current.condition.text;
     wind_dir.value = json.current.wind_dir;
+  });
+
+ 
+  let toDaysDate =new Date().toISOString().split('T')[0];
+  let threeDate = new Date(new Date().getTime()+(-2*24*60*60*1000));
+  let endDate = threeDate.toISOString().split('T')[0];
+ 
+
+  fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt='+endDate+'&end_dt='+toDaysDate )
+  .then((res) => res.json())
+  .then((json) => {
+    // uv.value = json.current.uv;
+
   });
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
@@ -81,8 +93,6 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     sundiff.value = Math.ceil(((new Date(json.sys.sunset * 1000).getTime() - new Date(json.sys.sunrise * 1000).getTime()) / 1000) / 3600);
     currDiffValue.value = Math.ceil(new Date().getHours() - ((new Date(json.sys.sunrise * 1000).getTime() / 1000) / 3600) / 86400);
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
-
-
 
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
       icon.value = './src/assets/main_heavy_rain.png',
@@ -121,12 +131,7 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
   })
   .catch((err) => (error.value = err));
 
-  fetch('https://tile.openweathermap.org/map/temp_new/3/{x}/{y}.png?appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
-  .then((res) => res.json())
-  .then((json) => {
-    uv.value = json.current.uv;
 
-  });
 
 
 const getCurrent = function () {
@@ -139,6 +144,14 @@ const now = ref({});
 function tick() {
   now.value = new Date().toLocaleTimeString();
   // console.log(now.value);
+
+  console.log(Math.floor(now.value))
+
+// if (now.value < sunset.value || now.value < sunrise.value) {
+//   bgvideo.value = './src/assets/night.mp4'
+//   console.log(Math.floor(sunset.value / 1000))
+// }
+
 }
 
 ChartJS.register(
@@ -337,6 +350,128 @@ const sunChartOptions = {
   labels: [''],
 }
 
+const  airSeries= [
+            {
+              name: 'Actual',
+              data: [
+                {
+                  x: '2011',
+                  y: 12,
+                  goals: [
+                    {
+                      name: 'Expected',
+                      value: 14,
+                      strokeWidth: 2,
+                      strokeDashArray: 2,
+                      strokeColor: '#775DD0'
+                    }
+                  ]
+                },
+                // {
+                //   x: '2012',
+                //   y: 44,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 54,
+                //       strokeWidth: 5,
+                //       strokeHeight: 10,
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2013',
+                //   y: 54,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 52,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2014',
+                //   y: 66,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 61,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2015',
+                //   y: 81,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 66,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2016',
+                //   y: 67,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 70,
+                //       strokeWidth: 5,
+                //       strokeHeight: 10,
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // }
+              ]
+            }
+          ];
+
+      const     airChartOptions= {
+            chart: {
+              height: 150,
+              type: 'bar'
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true,
+              }
+            },
+            colors: ['#00E396'],
+            dataLabels: {
+              formatter: function(val, opt) {
+                const goals =
+                  opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                    .goals
+            
+                if (goals && goals.length) {
+                  return `${val} / ${goals[0].value}`
+                }
+                return val
+              }
+            },
+            legend: {
+              show: false,
+              showForSingleSeries: false,
+              customLegendItems: ['Actual', 'Expected'],
+              markers: {
+                fillColors: ['#00E396', '#775DD0']
+              }
+            }
+          }
+
 </script>
 
 <template>
@@ -389,7 +524,7 @@ const sunChartOptions = {
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">Wind Status</p>
             <div class="h-[80px] px-4">
-              <Line :data="chartConfig.data" :options="chartConfig.options" />
+              <apexchart type="bar" height="350" :options="airChartOptions" :series="airSeries"></apexchart>
             </div>
             <div class="flex justify-between px-4">
               <div class="flex gap-1 items-end">
@@ -512,9 +647,7 @@ const sunChartOptions = {
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Weather conditon map</p>
         <div class=" mt-2">
-          <iframe width="100%" height="270"
-        src="https://embed.windy.com/embed2.html?lat=22.726&lon=90.560&detailLat=23.639&detailLon=90.560&width=800&height=270&zoom=10&level=surface&overlay=rainAccu&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
-        frameborder="0"></iframe>
+     
         </div>
       </div>
     </div>
