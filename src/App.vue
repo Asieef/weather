@@ -40,10 +40,9 @@ const sunset = ref(null);
 const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
-const foreCastIcon = ref(null);
 const filterForcast = ref([]);
 
-fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=6')
+fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
   .then((json) => {
     filterForcast.value = json.forecast.forecastday;
@@ -56,12 +55,25 @@ fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc4573023
     return date.toLocaleDateString(locale, { weekday: 'long' });        
 }
 
-fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka')
+fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
   .then((res) => res.json())
   .then((json) => {
     uv.value = json.current.uv;
     condition_text.value = json.current.condition.text;
     wind_dir.value = json.current.wind_dir;
+  });
+
+ 
+  let toDaysDate =new Date().toISOString().split('T')[0];
+  let threeDate = new Date(new Date().getTime()+(-2*24*60*60*1000));
+  let endDate = threeDate.toISOString().split('T')[0];
+ 
+
+  fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt='+endDate+'&end_dt='+toDaysDate )
+  .then((res) => res.json())
+  .then((json) => {
+    // uv.value = json.current.uv;
+
   });
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
@@ -120,6 +132,8 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
   .catch((err) => (error.value = err));
 
 
+
+
 const getCurrent = function () {
   return data.weather[0].icon;
 }
@@ -130,6 +144,14 @@ const now = ref({});
 function tick() {
   now.value = new Date().toLocaleTimeString();
   // console.log(now.value);
+
+  console.log(Math.floor(now.value))
+
+// if (now.value < sunset.value || now.value < sunrise.value) {
+//   bgvideo.value = './src/assets/night.mp4'
+//   console.log(Math.floor(sunset.value / 1000))
+// }
+
 }
 
 ChartJS.register(
@@ -328,6 +350,128 @@ const sunChartOptions = {
   labels: [''],
 }
 
+const  airSeries= [
+            {
+              name: 'Actual',
+              data: [
+                {
+                  x: '2011',
+                  y: 12,
+                  goals: [
+                    {
+                      name: 'Expected',
+                      value: 14,
+                      strokeWidth: 2,
+                      strokeDashArray: 2,
+                      strokeColor: '#775DD0'
+                    }
+                  ]
+                },
+                // {
+                //   x: '2012',
+                //   y: 44,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 54,
+                //       strokeWidth: 5,
+                //       strokeHeight: 10,
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2013',
+                //   y: 54,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 52,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2014',
+                //   y: 66,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 61,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2015',
+                //   y: 81,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 66,
+                //       strokeWidth: 10,
+                //       strokeHeight: 0,
+                //       strokeLineCap: 'round',
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // },
+                // {
+                //   x: '2016',
+                //   y: 67,
+                //   goals: [
+                //     {
+                //       name: 'Expected',
+                //       value: 70,
+                //       strokeWidth: 5,
+                //       strokeHeight: 10,
+                //       strokeColor: '#775DD0'
+                //     }
+                //   ]
+                // }
+              ]
+            }
+          ];
+
+      const     airChartOptions= {
+            chart: {
+              height: 150,
+              type: 'bar'
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true,
+              }
+            },
+            colors: ['#00E396'],
+            dataLabels: {
+              formatter: function(val, opt) {
+                const goals =
+                  opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                    .goals
+            
+                if (goals && goals.length) {
+                  return `${val} / ${goals[0].value}`
+                }
+                return val
+              }
+            },
+            legend: {
+              show: false,
+              showForSingleSeries: false,
+              customLegendItems: ['Actual', 'Expected'],
+              markers: {
+                fillColors: ['#00E396', '#775DD0']
+              }
+            }
+          }
+
 </script>
 
 <template>
@@ -380,7 +524,7 @@ const sunChartOptions = {
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">Wind Status</p>
             <div class="h-[80px] px-4">
-              <Line :data="chartConfig.data" :options="chartConfig.options" />
+              <apexchart type="bar" height="350" :options="airChartOptions" :series="airSeries"></apexchart>
             </div>
             <div class="flex justify-between px-4">
               <div class="flex gap-1 items-end">
@@ -487,13 +631,13 @@ const sunChartOptions = {
             class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 rounded-xl">
             <p class="text-sm font-semibold">Weather Forecast</p>
             <div v-for="(day, index) in filterForcast" :key="index">
-              <div class="flex justify-between items-center mt-2">
-                <img class="w-10" :src="day.day.condition.icon" />
-                <p class=" text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
+              <div class="grid grid-cols-4 mt-2 items-center justify-items-center">
+                <img class="w-10 col-span-1" :src="day.day.condition.icon" />
+                <p class=" col-span-1 text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
                   <span class=" text-gray-300 font-semibold text-sm">{{ Math.round(day.day.mintemp_c) }}</span>
                 </p>
-                <p class=" text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
-                <p class=" text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
               </div>
             </div>
           </div>
@@ -503,10 +647,7 @@ const sunChartOptions = {
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Weather conditon map</p>
         <div class=" mt-2">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14602.908814593184!2d90.4220142102161!3d23.79272668488235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70a7610d4f1%3A0x73d8f4d04735bc67!2sAmari%20Dhaka!5e0!3m2!1sen!2sbd!4v1681803147458!5m2!1sen!2sbd"
-            width="100%" height="270" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
+     
         </div>
       </div>
     </div>
