@@ -454,7 +454,7 @@ const sunChartOptions = {
       </div>
 
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
-        <p class="text-sm font-semibold">Weather conditon map</p>
+        <p class="text-sm font-semibold">Today's Weather</p>
         <div class=" mt-2">
 
         </div>
