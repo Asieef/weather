@@ -460,11 +460,11 @@ const sunChartOptions = {
         <div class=" mt-2">
           <div class="flex">
             <template v-for="(hour, index) in condition" :key="index">
-              <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-gradient-to-t from-cyan-900 to-gray-500 rounded-xl inline-block w-full ml-2 border-2">
-                <p class="text-center">{{ hour.time.slice(11) }}</p>
+              <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-gradient-to-t from-cyan-900 to-gray-500 
+              rounded inline-block w-full ml-2 py-2 bg-opacity-10">
+                <p class="text-center font-semibold text-sm">{{ hour.time.slice(11) }}</p>
                 <img :src=hour.condition.icon class="mx-10 m-auto" />
-                <p class="text-center"> {{ hour.temp_c }} </p>
-                <p class="text-center text-xs">{{ hour.condition.text }}</p>
+                <p class="text-center font-semibold text-lg"> {{ Math.round(hour.temp_c) }}&#8451 </p>
               </div>
             </template>
           </div>
