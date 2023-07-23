@@ -51,6 +51,7 @@ const windday31 = ref(null);
 const windday32 = ref(null);
 const windday33 = ref(null);
 const windHistory = ref([]);
+const condition = ref([]);
 
 fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
@@ -81,8 +82,9 @@ fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231
     windday32.value = json.forecast.forecastday[2].hour[7].wind_kph;
     windday33.value = json.forecast.forecastday[2].hour[15].wind_kph;
     windHistory.value = [{
-      data: [windday11.value,windday12.value, windday13.value, windday21.value, windday22.value,windday23.value, windday31.value,windday32.value, windday33.value]
+      data: [windday11.value, windday12.value, windday13.value, windday21.value, windday22.value, windday23.value, windday31.value, windday32.value, windday33.value]
     }];
+    condition.value = json.forecast.forecastday[1].hour;
   });
 
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
@@ -456,7 +458,16 @@ const sunChartOptions = {
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Today's Weather</p>
         <div class=" mt-2">
-
+          <div class="flex">
+            <template v-for="(hour, index) in condition" :key="index">
+              <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-gradient-to-t from-cyan-900 to-gray-500 rounded-xl inline-block w-full ml-2 border-2">
+                <p class="text-center">{{ hour.time.slice(11) }}</p>
+                <img :src=hour.condition.icon class="mx-10 m-auto" />
+                <p class="text-center"> {{ hour.temp_c }} </p>
+                <p class="text-center text-xs">{{ hour.condition.text }}</p>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>
