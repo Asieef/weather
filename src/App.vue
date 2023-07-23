@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, computed, reactive } from "vue";
-import ApexCharts from 'apexcharts';
+import { ref, onMounted } from "vue";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,12 +12,12 @@ import {
   BarElement,
   Legend,
 } from "chart.js";
-import { Line } from "vue-chartjs";
-import { Bar } from "vue-chartjs";
 import * as chartConfig from "./chartConfig.js";
 import * as barConfig from "./barConfig.js";
 import * as sunConfig from "./sunConfig.js";
 import * as donutConfig from "./donutConfig.js";
+import * as windChart from "./windChart.js";
+import * as uvChart from "./uvChart.js";
 
 
 const temp = ref(0);
@@ -41,6 +41,16 @@ const currDiffValue = ref(null);
 const sundiff = ref(null);
 const currSunPos = ref([]);
 const filterForcast = ref([]);
+const windday11 = ref(null);
+const windday12 = ref(null);
+const windday13 = ref(null);
+const windday21 = ref(null);
+const windday22 = ref(null);
+const windday23 = ref(null);
+const windday31 = ref(null);
+const windday32 = ref(null);
+const windday33 = ref(null);
+const windHistory = ref([]);
 
 fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
@@ -48,12 +58,32 @@ fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc4573023
     filterForcast.value = json.forecast.forecastday;
   });
 
-
-  function getDayName(dateStr, locale)
-{
-    var date = new Date(dateStr);
-    return date.toLocaleDateString(locale, { weekday: 'long' });        
+function getDayName(dateStr, locale) {
+  var date = new Date(dateStr);
+  return date.toLocaleDateString(locale, { weekday: 'long' });
 }
+
+let threeDate = new Date(new Date().getTime() + (-2 * 24 * 60 * 60 * 1000));
+let endDate = threeDate.toISOString().split('T')[0];
+let toDaysDate = new Date().toISOString().split('T')[0];
+
+
+fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt=' + endDate + '&end_dt=' + toDaysDate)
+  .then((res) => res.json())
+  .then((json) => {
+    windday11.value = json.forecast.forecastday[0].hour[0].wind_kph;
+    windday12.value = json.forecast.forecastday[0].hour[7].wind_kph;
+    windday13.value = json.forecast.forecastday[0].hour[15].wind_kph;
+    windday21.value = json.forecast.forecastday[1].hour[0].wind_kph;
+    windday22.value = json.forecast.forecastday[1].hour[7].wind_kph;
+    windday23.value = json.forecast.forecastday[1].hour[15].wind_kph;
+    windday31.value = json.forecast.forecastday[2].hour[0].wind_kph;
+    windday32.value = json.forecast.forecastday[2].hour[7].wind_kph;
+    windday33.value = json.forecast.forecastday[2].hour[15].wind_kph;
+    windHistory.value = [{
+      data: [windday11.value,windday12.value, windday13.value, windday21.value, windday22.value,windday23.value, windday31.value,windday32.value, windday33.value]
+    }];
+  });
 
 fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
   .then((res) => res.json())
@@ -61,19 +91,6 @@ fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231
     uv.value = json.current.uv;
     condition_text.value = json.current.condition.text;
     wind_dir.value = json.current.wind_dir;
-  });
-
- 
-  let toDaysDate =new Date().toISOString().split('T')[0];
-  let threeDate = new Date(new Date().getTime()+(-2*24*60*60*1000));
-  let endDate = threeDate.toISOString().split('T')[0];
- 
-
-  fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt='+endDate+'&end_dt='+toDaysDate )
-  .then((res) => res.json())
-  .then((json) => {
-    // uv.value = json.current.uv;
-
   });
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
@@ -131,9 +148,6 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
   })
   .catch((err) => (error.value = err));
 
-
-
-
 const getCurrent = function () {
   return data.weather[0].icon;
 }
@@ -143,15 +157,6 @@ const getDate = new Date().toDateString();
 const now = ref({});
 function tick() {
   now.value = new Date().toLocaleTimeString();
-  // console.log(now.value);
-
-  console.log(Math.floor(now.value))
-
-// if (now.value < sunset.value || now.value < sunrise.value) {
-//   bgvideo.value = './src/assets/night.mp4'
-//   console.log(Math.floor(sunset.value / 1000))
-// }
-
 }
 
 ChartJS.register(
@@ -173,78 +178,7 @@ onMounted(() => {
   window.setInterval(tick, 1000);
 });
 
-const chartOptions = {
-  theme: {
-    monochrome: {
-      enabled: true,
-      color: '#5F9EA0',
-      shadeTo: 'light',
-      shadeIntensity: 0.65
-    }
-  },
-
-  chart: {
-    type: 'radialBar',
-    colors: ['#fff'],
-    offsetY: -20,
-    sparkline: {
-      enabled: true
-    }
-  },
-  plotOptions: {
-    radialBar: {
-      startAngle: -90,
-      background: '#bbb',
-      endAngle: 90,
-
-      track: {
-        strokeWidth: '10%',
-        margin: 5, // margin is in pixels
-        dropShadow: {
-          enabled: true,
-          top: 2,
-          left: 0,
-          color: '#999',
-          opacity: 1,
-          blur: 4
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        name: {
-          show: true
-        },
-        value: {
-          offsetY: -2,
-          fontSize: '22px',
-          show: false
-        }
-      }
-    }
-  },
-  grid: {
-    padding: {
-      top: -10
-    }
-  },
-  fill: {
-    type: 'gradient',
-
-    gradient: {
-      shade: 'light',
-      shadeIntensity: 0.4,
-      inverseColors: false,
-      opacityFrom: 1,
-      opacityTo: 1,
-      stops: [0, 5, 7, 9]
-    },
-  },
-  labels: [''],
-}
-
 const sunChartOptions = {
-
-
   theme: {
     monochrome: {
       enabled: true,
@@ -348,129 +282,8 @@ const sunChartOptions = {
     dashArray: 0,
   },
   labels: [''],
-}
+};
 
-const  airSeries= [
-            {
-              name: 'Actual',
-              data: [
-                {
-                  x: '2011',
-                  y: 12,
-                  goals: [
-                    {
-                      name: 'Expected',
-                      value: 14,
-                      strokeWidth: 2,
-                      strokeDashArray: 2,
-                      strokeColor: '#775DD0'
-                    }
-                  ]
-                },
-                // {
-                //   x: '2012',
-                //   y: 44,
-                //   goals: [
-                //     {
-                //       name: 'Expected',
-                //       value: 54,
-                //       strokeWidth: 5,
-                //       strokeHeight: 10,
-                //       strokeColor: '#775DD0'
-                //     }
-                //   ]
-                // },
-                // {
-                //   x: '2013',
-                //   y: 54,
-                //   goals: [
-                //     {
-                //       name: 'Expected',
-                //       value: 52,
-                //       strokeWidth: 10,
-                //       strokeHeight: 0,
-                //       strokeLineCap: 'round',
-                //       strokeColor: '#775DD0'
-                //     }
-                //   ]
-                // },
-                // {
-                //   x: '2014',
-                //   y: 66,
-                //   goals: [
-                //     {
-                //       name: 'Expected',
-                //       value: 61,
-                //       strokeWidth: 10,
-                //       strokeHeight: 0,
-                //       strokeLineCap: 'round',
-                //       strokeColor: '#775DD0'
-                //     }
-                //   ]
-                // },
-                // {
-                //   x: '2015',
-                //   y: 81,
-                //   goals: [
-                //     {
-                //       name: 'Expected',
-                //       value: 66,
-                //       strokeWidth: 10,
-                //       strokeHeight: 0,
-                //       strokeLineCap: 'round',
-                //       strokeColor: '#775DD0'
-                //     }
-                //   ]
-                // },
-                // {
-                //   x: '2016',
-                //   y: 67,
-                //   goals: [
-                //     {
-                //       name: 'Expected',
-                //       value: 70,
-                //       strokeWidth: 5,
-                //       strokeHeight: 10,
-                //       strokeColor: '#775DD0'
-                //     }
-                //   ]
-                // }
-              ]
-            }
-          ];
-
-      const     airChartOptions= {
-            chart: {
-              height: 150,
-              type: 'bar'
-            },
-            plotOptions: {
-              bar: {
-                horizontal: true,
-              }
-            },
-            colors: ['#00E396'],
-            dataLabels: {
-              formatter: function(val, opt) {
-                const goals =
-                  opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
-                    .goals
-            
-                if (goals && goals.length) {
-                  return `${val} / ${goals[0].value}`
-                }
-                return val
-              }
-            },
-            legend: {
-              show: false,
-              showForSingleSeries: false,
-              customLegendItems: ['Actual', 'Expected'],
-              markers: {
-                fillColors: ['#00E396', '#775DD0']
-              }
-            }
-          }
 
 </script>
 
@@ -478,40 +291,37 @@ const  airSeries= [
   <div class="container mx-auto mt-10">
     <div class="grid grid-cols-4">
       <div class="col-span-1">
-        <div class="">
+        <div class="text-white max-w-xs my-auto mx-auto  rounded-xl relative">
+          <video :key="bgvideo" autoplay loop muted class="-z-20 h-full w-full absolute object-cover rounded-xl">
+            <source :src="bgvideo" type="video/mp4" />
+          </video>
 
-          <div class="text-white max-w-xs my-auto mx-auto  rounded-xl relative">
-            <video :key="bgvideo" autoplay loop muted class="-z-20 h-full w-full absolute object-cover rounded-xl">
-              <source :src="bgvideo" type="video/mp4" />
-            </video>
-
-            <div class="z-30 p-4">
-              <div class="flex justify-between">
-                <div>
-                  <img :src="icon" />
-                  <p class="text-6xl font-bold">{{ temp }}&#8451;</p>
-                </div>
+          <div class="z-30 p-4">
+            <div class="flex justify-between">
+              <div>
+                <img :src="icon" />
+                <p class="text-6xl font-bold">{{ temp }}&#8451;</p>
               </div>
-              <div class="mt-5 flex gap-2 items-center w-52">
-                <img class="w-6" :src="secondicon" />
-                <span class="text-sm text-gray-200 font-semibold">
-                  {{ type }}
+            </div>
+            <div class="mt-5 flex gap-2 items-center w-52">
+              <img class="w-6" :src="secondicon" />
+              <span class="text-sm text-gray-200 font-semibold">
+                {{ type }}
+              </span>
+            </div>
+            <div class="mt-5 border-t border-gray-200">
+              <div class="flex gap-2 pt-4">
+                <img class="w-4" src="./assets/location.png" />
+                <span class="text-xs text-gray-200 font-semibold">
+                  Dhaka
                 </span>
               </div>
-              <div class="mt-5 border-t border-gray-200">
-                <div class="flex gap-2 pt-4">
-                  <img class="w-4" src="./assets/location.png" />
-                  <span class="text-xs text-gray-200 font-semibold">
-                    Dhaka
-                  </span>
-                </div>
-                <div class="flex gap-2 mt-2">
-                  <img class="w-4" src="./assets/calendar.png" />
-                  <span class="text-xs text-gray-200 font-semibold">
-                    {{ getDate }}
-                  </span>
-                  <span class="text-xs font-bold"> {{ now }}</span>
-                </div>
+              <div class="flex gap-2 mt-2">
+                <img class="w-4" src="./assets/calendar.png" />
+                <span class="text-xs text-gray-200 font-semibold">
+                  {{ getDate }}
+                </span>
+                <span class="text-xs font-bold"> {{ now }}</span>
               </div>
             </div>
           </div>
@@ -519,12 +329,11 @@ const  airSeries= [
       </div>
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Today's Highlight</p>
-
         <div class="grid grid-cols-3 gap-4 mt-4">
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">Wind Status</p>
             <div class="h-[80px] px-4">
-              <apexchart type="bar" height="350" :options="airChartOptions" :series="airSeries"></apexchart>
+              <apexchart type="line" height="110" :options="windChart.chartOptions" :series="windHistory"></apexchart>
             </div>
             <div class="flex justify-between px-4">
               <div class="flex gap-1 items-end">
@@ -540,9 +349,7 @@ const  airSeries= [
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">UV Index</p>
             <div class="h-[80px] px-4">
-              <!-- <Bar :data="barConfig.data" :options="barConfig.options" /> -->
-
-              <apexchart type="radialBar" :options="chartOptions" :series="[uv * 10]"></apexchart>
+              <apexchart type="radialBar" :options="uvChart.chartOptions" :series="[uv * 10]"></apexchart>
             </div>
             <div class="flex justify-center items-center px-4">
               <div class="flex gap-1 items-end">
@@ -636,8 +443,10 @@ const  airSeries= [
                 <p class=" col-span-1 text-white font-semibold text-lg">{{ Math.round(day.day.maxtemp_c) }}&#8451/
                   <span class=" text-gray-300 font-semibold text-sm">{{ Math.round(day.day.mintemp_c) }}</span>
                 </p>
-                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }} {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
-                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }}
+                  {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
+                <p class=" col-span-1 text-gray-300 font-semibold text-xs">
+                  {{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
               </div>
             </div>
           </div>
@@ -647,7 +456,7 @@ const  airSeries= [
       <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
         <p class="text-sm font-semibold">Weather conditon map</p>
         <div class=" mt-2">
-     
+
         </div>
       </div>
     </div>
