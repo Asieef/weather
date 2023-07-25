@@ -22,9 +22,9 @@ import * as uvChart from "./uvChart.js";
 
 const temp = ref(0);
 const type = ref(null);
-const icon = ref('./src/assets/main_clear.png');
-const bgvideo = ref('./src/assets/clear.mp4');
-const secondicon = ref('./src/assets/second_clear.png');
+const icon = ref('./main_clear.png');
+const bgvideo = ref('./clear.mp4');
+const secondicon = ref('./second_clear.png');
 const data = ref(null);
 const error = ref(null);
 const wind = ref(null);
@@ -114,37 +114,37 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
 
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
-      icon.value = './src/assets/main_heavy_rain.png',
-        secondicon.value = './src/assets/second_rain.png',
-        bgvideo.value = './src/assets/rain.mp4'
+      icon.value = './main_heavy_rain.png',
+        secondicon.value = './second_rain.png',
+        bgvideo.value = './rain.mp4'
     }
     else if (json.weather[0].icon == '01d') {
-      icon.value = './src/assets/main_clear.png',
-        secondicon.value = './src/assets/second_clear.png',
-        bgvideo.value = './src/assets/clear.mp4'
+      icon.value = './main_clear.png',
+        secondicon.value = './second_clear.png',
+        bgvideo.value = './clear.mp4'
     }
     else if (json.weather[0].icon == '02d' || json.weather[0].icon == '03d' || json.weather[0].icon == '04d') {
-      icon.value = './src/assets/main_few_cloud.png',
-        secondicon.value = './src/assets/second_cloud.png',
-        bgvideo.value = './src/assets/cloud.mp4'
+      icon.value = './main_few_cloud.png',
+        secondicon.value = './second_cloud.png',
+        bgvideo.value = './cloud.mp4'
     }
 
     else if (json.weather[0].icon == '11d') {
-      icon.value = './src/assets/rain_icon.png',
-        secondicon.value = './src/assets/second_thunder.png',
-        bgvideo.value = './src/assets/thunder.mp4'
+      icon.value = './rain_icon.png',
+        secondicon.value = './second_thunder.png',
+        bgvideo.value = './thunder.mp4'
     }
 
     else if (json.weather[0].icon == '50d') {
-      icon.value = './src/assets/main_haze.png',
-        secondicon.value = './src/assets/second_haze.png',
-        bgvideo.value = './src/assets/haze.mp4'
+      icon.value = './main_haze.png',
+        secondicon.value = './second_haze.png',
+        bgvideo.value = './haze.mp4'
     }
 
     else if (json.weather[0].icon == '13d') {
-      icon.value = './src/assets/main_mist.png',
-        secondicon.value = './src/assets/second_mist.png',
-        bgvideo.value = './src/assets/mist.mp4'
+      icon.value = './main_mist.png',
+        secondicon.value = './second_mist.png',
+        bgvideo.value = './mist.mp4'
     }
 
   })
