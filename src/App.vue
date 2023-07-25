@@ -22,9 +22,9 @@ import * as uvChart from "./uvChart.js";
 
 const temp = ref(0);
 const type = ref(null);
-const icon = ref('./src/assets/main_clear.png');
-const bgvideo = ref('./src/assets/clear.mp4');
-const secondicon = ref('./src/assets/second_clear.png');
+const icon = ref('./main_clear.png');
+const bgvideo = ref('./clear.mp4');
+const secondicon = ref('./second_clear.png');
 const data = ref(null);
 const error = ref(null);
 const wind = ref(null);
