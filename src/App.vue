@@ -53,7 +53,7 @@ const windday33 = ref(null);
 const windHistory = ref([]);
 const condition = ref([]);
 
-fetch('http://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
+fetch('https://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
   .then((json) => {
     filterForcast.value = json.forecast.forecastday;
@@ -69,7 +69,7 @@ let endDate = threeDate.toISOString().split('T')[0];
 let toDaysDate = new Date().toISOString().split('T')[0];
 
 
-fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt=' + endDate + '&end_dt=' + toDaysDate)
+fetch('https://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes&dt=' + endDate + '&end_dt=' + toDaysDate)
   .then((res) => res.json())
   .then((json) => {
     windday11.value = json.forecast.forecastday[0].hour[0].wind_kph;
@@ -87,7 +87,7 @@ fetch('http://api.weatherapi.com/v1/history.json?key=025d1754d6bf41768cc45730231
     condition.value = json.forecast.forecastday[1].hour;
   });
 
-fetch('http://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
+fetch('https://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc45730231206&q=dhaka&aqi=yes')
   .then((res) => res.json())
   .then((json) => {
     uv.value = json.current.uv;
@@ -290,11 +290,11 @@ const sunChartOptions = {
 </script>
 
 <template>
-  <div class="container mx-auto mt-10">
-    <div class="grid grid-cols-4">
+  <div class="container mx-auto lg:mt-10">
+    <div class="grid lg:grid-cols-4">
       <div class="col-span-1">
-        <div class="text-white max-w-xs my-auto mx-auto  rounded-xl relative">
-          <video :key="bgvideo" autoplay loop muted class="-z-20 h-full w-full absolute object-cover rounded-xl">
+        <div class="text-white max-w-xs my-auto mx-auto  lg:rounded-xl relative">
+          <video :key="bgvideo" autoplay loop muted class="-z-20 h-full w-full absolute object-cover lg:rounded-xl">
             <source :src="bgvideo" type="video/mp4" />
           </video>
 
@@ -329,9 +329,9 @@ const sunChartOptions = {
           </div>
         </div>
       </div>
-      <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
+      <div class="lg:col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 lg:rounded-xl">
         <p class="text-sm font-semibold">Today's Highlight</p>
-        <div class="grid grid-cols-3 gap-4 mt-4">
+        <div class="grid lg:grid-cols-3 gap-4 mt-4">
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4">Wind Status</p>
             <div class="h-[80px] px-4">
@@ -363,7 +363,7 @@ const sunChartOptions = {
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2">
             <p class="text-sm text-gray-200 font-semibold px-4"> Sunrise & Sunset</p>
 
-            <div class="h-[80px] px-4">
+            <div class="h-[80px] px-4 py-2">
               <apexchart type="radialBar" :options="sunChartOptions" :series="[currSunPos]"></apexchart>
             </div>
             <div class="flex justify-between px-4">
@@ -379,7 +379,7 @@ const sunChartOptions = {
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 mt-2">
+        <div class="grid lg:grid-cols-3 gap-4 mt-2">
           <div class="col-span-1 bg-black bg-opacity-10 rounded-xl py-2 px-4">
             <div class="grid grid-cols-2">
               <div>
@@ -433,11 +433,11 @@ const sunChartOptions = {
       </div>
     </div>
 
-    <div class="grid grid-cols-4 mt-10">
+    <div class="grid lg:grid-cols-4 lg:mt-10">
       <div class="col-span-1">
         <div class="">
           <div
-            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 rounded-xl">
+            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 lg:rounded-xl">
             <p class="text-sm font-semibold">Weather Forecast</p>
             <div v-for="(day, index) in filterForcast" :key="index">
               <div class="grid grid-cols-4 mt-2 items-center justify-items-center">
@@ -455,15 +455,15 @@ const sunChartOptions = {
         </div>
       </div>
 
-      <div class="col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 p-4 py-5 px-5 rounded-xl">
+      <div class="lg:col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 py-5 px-5 lg:rounded-xl">
         <p class="text-sm font-semibold">Today's Weather</p>
-        <div class=" mt-2">
-          <div class="flex">
+        <div class="mt-2">
+          <div class="lg:flex">
             <template v-for="(hour, index) in condition" :key="index">
-              <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-gradient-to-t from-cyan-900 to-gray-500 
-              rounded inline-block w-full ml-2 py-2 bg-opacity-10">
+              <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-black bg-opacity-10 lg:rounded-xl border-b-2 border-gray-600 py-2 
+              inline-block w-full ml-2 ">
                 <p class="text-center font-semibold text-sm">{{ hour.time.slice(11) }}</p>
-                <img :src=hour.condition.icon class="mx-10 m-auto" />
+                <img :src=hour.condition.icon class="lg:mx-10 m-auto" />
                 <p class="text-center font-semibold text-lg"> {{ Math.round(hour.temp_c) }}&#8451 </p>
               </div>
             </template>
