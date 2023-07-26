@@ -52,6 +52,7 @@ const windday32 = ref(null);
 const windday33 = ref(null);
 const windHistory = ref([]);
 const condition = ref([]);
+const iconapi = ref(null);
 
 fetch('https://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
@@ -93,6 +94,7 @@ fetch('https://api.weatherapi.com/v1/current.json?key=025d1754d6bf41768cc4573023
     uv.value = json.current.uv;
     condition_text.value = json.current.condition.text;
     wind_dir.value = json.current.wind_dir;
+    iconapi.value = json.current.condition.icon;
   });
 
 fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&appid=8b45b895d7edc8b009174de9a74d6213&units=metric')
@@ -293,7 +295,7 @@ const sunChartOptions = {
   <div class="container mx-auto lg:mt-10">
     <div class="grid lg:grid-cols-4">
       <div class="col-span-1">
-        <div class="text-white max-w-xs my-auto mx-auto  lg:rounded-xl relative">
+        <div class="text-white lg:max-w-xs my-auto mx-auto  lg:rounded-xl relative pb-2">
           <video :key="bgvideo" autoplay loop muted class="-z-20 h-full w-full absolute object-cover lg:rounded-xl">
             <source :src="bgvideo" type="video/mp4" />
           </video>
@@ -301,7 +303,7 @@ const sunChartOptions = {
           <div class="z-30 p-4">
             <div class="flex justify-between">
               <div>
-                <img :src="icon" />
+                <img class=" h-24" :src="iconapi" />
                 <p class="text-6xl font-bold">{{ temp }}&#8451;</p>
               </div>
             </div>
@@ -435,9 +437,9 @@ const sunChartOptions = {
 
     <div class="grid lg:grid-cols-4 lg:mt-10">
       <div class="col-span-1">
-        <div class="">
+        <div>
           <div
-            class="text-white max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 lg:rounded-xl">
+            class="text-white lg:max-w-xs my-auto mx-auto bg-gradient-to-r from-gray-700 to-gray-500 p-4 py-5 px-5 lg:rounded-xl">
             <p class="text-sm font-semibold">Weather Forecast</p>
             <div v-for="(day, index) in filterForcast" :key="index">
               <div class="grid grid-cols-4 mt-2 items-center justify-items-center">
@@ -461,7 +463,7 @@ const sunChartOptions = {
           <div class="lg:flex">
             <template v-for="(hour, index) in condition" :key="index">
               <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-black bg-opacity-10 lg:rounded-xl border-b-2 border-gray-600 py-2 
-              inline-block w-full ml-2 ">
+              inline-block w-full ">
                 <p class="text-center font-semibold text-sm">{{ hour.time.slice(11) }}</p>
                 <img :src=hour.condition.icon class="lg:mx-10 m-auto" />
                 <p class="text-center font-semibold text-lg"> {{ Math.round(hour.temp_c) }}&#8451 </p>
@@ -470,7 +472,10 @@ const sunChartOptions = {
           </div>
         </div>
       </div>
+      
+      
     </div>
+    <p class="text-sm font-semibold p-2 text-center">Copyright @2023</p>
   </div>
 </template>
 
