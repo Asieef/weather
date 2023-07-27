@@ -460,10 +460,10 @@ const sunChartOptions = {
       <div class="lg:col-span-3 text-white bg-gradient-to-r from-cyan-900 to-gray-500 py-5 px-5 lg:rounded-xl">
         <p class="text-sm font-semibold">Today's Weather</p>
         <div class="mt-2">
-          <div class="lg:flex">
+          <div class="lg:flex gap-1">
             <template v-for="(hour, index) in condition" :key="index">
               <div v-if="(index % 3 === 0) && index != 0" class="text-white bg-black bg-opacity-10 lg:rounded-xl border-b-2 border-gray-600 py-2 
-              inline-block w-full ">
+              inline-block w-full">
                 <p class="text-center font-semibold text-sm">{{ hour.time.slice(11) }}</p>
                 <img :src=hour.condition.icon class="lg:mx-10 m-auto" />
                 <p class="text-center font-semibold text-lg"> {{ Math.round(hour.temp_c) }}&#8451 </p>
