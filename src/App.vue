@@ -53,11 +53,14 @@ const windday33 = ref(null);
 const windHistory = ref([]);
 const condition = ref([]);
 const iconapi = ref(null);
+const daynight = ref(null);
 
 fetch('https://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
   .then((json) => {
     filterForcast.value = json.forecast.forecastday;
+    daynight.value = json.current.is_day;
+    console.log(json.current.is_day);
   });
 
 function getDayName(dateStr, locale) {
@@ -115,6 +118,8 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     currDiffValue.value = Math.ceil(new Date().getHours() - ((new Date(json.sys.sunrise * 1000).getTime() / 1000) / 3600) / 86400);
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
 
+    if(daynight.value==1) {
+
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
       icon.value = './main_heavy_rain.png',
         secondicon.value = './second_rain.png',
@@ -148,7 +153,10 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
         secondicon.value = './second_mist.png',
         bgvideo.value = './mist.mp4'
     }
-
+  } 
+  else {
+    bgvideo.value ='./night.mp4';
+  }
   })
   .catch((err) => (error.value = err));
 
@@ -448,7 +456,7 @@ const sunChartOptions = {
                   <span class=" text-gray-300 font-semibold text-sm">{{ Math.round(day.day.mintemp_c) }}</span>
                 </p>
                 <p class=" col-span-1 text-gray-300 font-semibold text-xs">{{ new Date(day.date).getDate() }}
-                  {{ new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(day.date)) }}</p>
+                  {{ new Intl.DateTimeFormat('en-US', { month: 'short' }).format(new Date(day.date)) }}</p>
                 <p class=" col-span-1 text-gray-300 font-semibold text-xs">
                   {{ getDayName(day.date, "en-US").substring(0, 3) }}</p>
               </div>
