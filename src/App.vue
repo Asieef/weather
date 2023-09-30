@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 import {
   Chart as ChartJS,
@@ -53,14 +53,14 @@ const windday33 = ref(null);
 const windHistory = ref([]);
 const condition = ref([]);
 const iconapi = ref(null);
-const daynight = ref(null);
+const daynight = ref(1);
 
 fetch('https://api.weatherapi.com/v1/forecast.json?key=025d1754d6bf41768cc45730231206&q=dhaka&days=3')
   .then((res) => res.json())
   .then((json) => {
     filterForcast.value = json.forecast.forecastday;
     daynight.value = json.current.is_day;
-    console.log(json.current.is_day);
+    // console.log(json.current.is_day);
   });
 
 function getDayName(dateStr, locale) {
@@ -118,8 +118,12 @@ fetch('https://api.openweathermap.org/data/2.5/weather?lat=23.8103&lon=90.4125&a
     currDiffValue.value = Math.ceil(new Date().getHours() - ((new Date(json.sys.sunrise * 1000).getTime() / 1000) / 3600) / 86400);
     currSunPos.value = Math.ceil(100 / (sundiff.value / currDiffValue.value));
 
-    if(daynight.value==1) {
 
+  const calculatedTime = computed(() => {
+  return daynight.value;
+    })
+
+    if(calculatedTime.value==1) {
     if (json.weather[0].icon == '09d' || json.weather[0].icon == '10d') {
       icon.value = './main_heavy_rain.png',
         secondicon.value = './second_rain.png',
